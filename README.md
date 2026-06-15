@@ -1,3 +1,26 @@
+# GSServer 中文安装包
+
+本仓库提供 GSServer 的中文安装包，下载请见 [Releases](https://github.com/songshugong/GSServer-zh/releases/tag/zh-cn-installers-2026-06-16)。
+
+## 下载
+
+### 当前版本
+
+- [GSServer 1.2.2.4 中文安装包](https://github.com/songshugong/GSServer-zh/releases/download/zh-cn-installers-2026-06-16/ASCOMGSServer1224Setup.exe)
+
+当前版本跟随官方新版 GSServer，适合已安装 ASCOM Platform 7.x 的系统。
+
+### 旧版 ASCOM 6 兼容安装包
+
+如果你的电脑仍在使用 ASCOM Platform 6.x，或者新版 GSServer 无法启动，可以使用下面的旧版安装包：
+
+- [GSServer 1.0.8.6 中文安装包](https://github.com/songshugong/GSServer-zh/releases/download/zh-cn-installers-2026-06-16/ASCOMGSServer1086Setup.exe)
+- [GSServer 1.0.6.5 中文安装包](https://github.com/songshugong/GSServer-zh/releases/download/zh-cn-installers-2026-06-16/ASCOMGSServer1065Setup.exe)
+
+安装器会根据 Windows/安装时选择的语言显示界面；英文环境不会被强制显示为中文。
+
+---
+
 # GSServer - ASCOM Synta/SkyWatcher Mount Driver
 GS Server is SkyWatcher ASCOM telescope driver for use with astronomy software and SkyWatcher and Orion mounts.  It is built using C#, WPF, and a variation of MVVM.
 
@@ -106,6 +129,5 @@ Can be found at [Groups.io](https://groups.io/g/GSS)
 * ASCOM development team
 * Andrew Johansen & Colm Brazel
 * SkywatcherEQ8 members at [Groups.io](https://groups.io/g/SkywatcherEQ8)
-
 
 
