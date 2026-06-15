@@ -1,0 +1,103 @@
+name: Build legacy zh-CN installer
+
+on:
+  push:
+    branches:
+      - codex/build-gsserver-1086-zh-cn
+      - codex/build-gsserver-1065-zh-cn
+  workflow_dispatch:
+
+jobs:
+  build-installer:
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: GSSolution.sln
+      Configuration: Release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Read installer name
+        shell: pwsh
+        run: |
+          $iss = Get-Content "Resources/Installer/GreenSwampSetup.iss" -Raw
+          if ($iss -notmatch '#define\s+InstallerBaseName\s+"([^"]+)"') {
+            throw "InstallerBaseName not found"
+          }
+          "Installer_Name=$($Matches[1])" >> $env:GITHUB_ENV
+
+      - name: Verify zh-CN installer encoding
+        shell: pwsh
+        run: |
+          $files = @(
+            "Resources/Installer/GreenSwampSetup.iss",
+            "Resources/Installer/ChineseSimplified.isl"
+          )
+          foreach ($file in $files) {
+            if (!(Test-Path $file)) { throw "Missing $file" }
+            $bytes = [System.IO.File]::ReadAllBytes($file)
+            if ($bytes.Length -lt 3 -or $bytes[0] -ne 0xEF -or $bytes[1] -ne 0xBB -or $bytes[2] -ne 0xBF) {
+              throw "$file must be UTF-8 with BOM for Inno Setup 6.2.x"
+            }
+          }
+          if (!(Select-String -Path "Resources/Installer/GreenSwampSetup.iss" -Pattern 'Name: "chinese"; MessagesFile: "ChineseSimplified.isl"' -Quiet)) {
+            throw "Installer must use the repo-local ChineseSimplified.isl"
+          }
+
+      - name: Verify zh-CN language support
+        shell: pwsh
+        run: |
+          if (!(Select-String -Path "GS.Shared/Languages.cs" -Pattern '"zh-CN"' -Quiet)) { throw "zh-CN is not registered in SupportedLanguages" }
+          if (!(Select-String -Path "GS.Server/GSServer.cs" -Pattern 'case @"/zh"' -Quiet)) { throw "/zh command line switch is missing" }
+          if (!(Select-String -Path "GS.Server/GSServer.cs" -Pattern 'case @"/chinese"' -Quiet)) { throw "/chinese command line switch is missing" }
+          if (!(Select-String -Path "Resources/Installer/GreenSwampSetup.iss" -Pattern 'chinese.WelcomeLabel2=' -Quiet)) { throw "Chinese welcome message is missing" }
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v3
+
+      - name: Restore
+        shell: pwsh
+        run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+
+      - name: Build Release
+        shell: pwsh
+        run: |
+          msbuild "XInputInterface/XInputInterface.vcxproj" /t:Build /p:Configuration=$env:Configuration /p:Platform=Win32 /p:PlatformToolset=v143
+          msbuild "GS.Ascom.SkyTelescope/ASCOM.GS.Sky.Telescope.csproj" /t:Build /p:Configuration=$env:Configuration /p:Platform=AnyCPU /p:PlatformToolset=v143 /m
+          msbuild "GS.SkyApi/GS.SkyApi.csproj" /t:Build /p:Configuration=$env:Configuration /p:Platform=AnyCPU /p:PlatformToolset=v143 /m
+          msbuild "GS.ChartViewer/GS.ChartViewer.csproj" /t:Build /p:Configuration=$env:Configuration /p:Platform=AnyCPU /p:PlatformToolset=v143 /m
+          msbuild "GS.Utilities/GS.Utilities.csproj" /t:Build /p:Configuration=$env:Configuration /p:Platform=AnyCPU /p:PlatformToolset=v143 /m
+
+      - name: Verify Release language files
+        shell: pwsh
+        run: |
+          $files = @(
+            "Builds/Release/LanguageFiles/GSServer_zh-CN.xaml",
+            "Builds/Release/LanguageFiles/GSChart_zh-CN.xaml",
+            "Builds/Release/LanguageFiles/GSUtil_zh-CN.xaml"
+          )
+          foreach ($file in $files) {
+            if (!(Test-Path $file)) { throw "Missing $file" }
+          }
+          Get-ChildItem Builds/Release/LanguageFiles/*zh-CN.xaml | Select-Object FullName,Length
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --version=6.2.2 --allow-downgrade --no-progress -y
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "Resources/Installer/GreenSwampSetup.iss"
+          $installer = "Resources/Installer/$env:Installer_Name.exe"
+          if (!(Test-Path $installer)) { throw "Installer was not created: $installer" }
+          Get-Item $installer | Select-Object FullName,Length
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.Installer_Name }}
+          path: Resources/Installer/${{ env.Installer_Name }}.exe
+          if-no-files-found: error
