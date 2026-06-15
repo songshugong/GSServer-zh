@@ -650,12 +650,17 @@ namespace GS.Server
                             Shared.Settings.Language = "fr-FR";
                             break;
                         case @"/it":
+                        case @"/italian":
                         case @"/italiin":
                             Shared.Settings.Language = "it-IT";
                             break;
+                        case @"/zh":
+                        case @"/chinese":
+                            Shared.Settings.Language = "zh-CN";
+                            break;
                         default:
                             MessageBox.Show(
-                                @"Unknown argument: '" + arg.ToLower() + @"' Valid: /unprofile, /register, /unregister, /embedding, /pec, /english, /french, /german, /italiin",
+                                @"Unknown argument: '" + arg.ToLower() + @"' Valid: /unprofile, /register, /unregister, /embedding, /pec, /english, /french, /german, /italian, /chinese",
                                 @"GSServer", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                             break;
                     }
