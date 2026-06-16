@@ -18,8 +18,8 @@ AppPublisher=Robert Morgan <robert.morgan.e@gmail.com>
 AppPublisherURL=mailto:robert.morgan.e@gmail.com
 AppSupportURL=https://ascomtalk.groups.io/g/Developer/topics
 AppUpdatesURL=http://ascom-standards.org/
-MinVersion=0,6.0
-DefaultDirName="{cf}\ASCOM\Telescope\GSServer"
+MinVersion=0,6.1sp1
+DefaultDirName="{commoncf}\ASCOM\Telescope\GSServer"
 DefaultGroupName="GS Server"
 DisableDirPage=yes
 DisableProgramGroupPage=yes
@@ -33,7 +33,7 @@ SolidCompression=yes
 WizardImageFile="WizardImage1.bmp"
 LicenseFile="License.txt"
 ; {cf}\ASCOM\Uninstall\Telescope folder created by Platform, always
-UninstallFilesDir="{cf}\ASCOM\Uninstall\Telescope\GSServer"
+UninstallFilesDir="{commoncf}\ASCOM\Uninstall\Telescope\GSServer"
 ;"C:\Program Files (x86)\Windows Kits\10\Tools\bin\i386\signtool.exe" sign /f "C:\Users\Rob\source\repos\GSSolution\Resources\Installer\GreenSwamp.pfx" /p rem /d "GreenSwamp Installer"  $f
 ;"C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x86\signtool.exe" sign /f "C:\Users\phil\source\repos\GSServer\Resources\Installer\GreenSwamp.pfx" /p rem /d "GreenSwamp Installer" $f
 ;SignTool=Signtool
@@ -48,14 +48,14 @@ Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl"
 Name: "chinese"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
 
 [Dirs]
-Name: "{cf}\ASCOM\Uninstall\Telescope\GSServer\"
-Name: "{cf}\ASCOM\Uninstall\Telescope\GSServer\SkyScripts\"
-Name: "{cf}\ASCOM\Uninstall\Telescope\GSServer\Notes\NotesTemplates\"
-Name: "{cf}\ASCOM\Uninstall\Telescope\GSServer\Models"
-Name: "{cf}\ASCOM\Uninstall\Telescope\GSServer\LanguageFiles"
-Name: "{cf}\ASCOM\Uninstall\Telescope\GSServer\arm64"
-Name: "{cf}\ASCOM\Uninstall\Telescope\GSServer\x64"
-Name: "{cf}\ASCOM\Uninstall\Telescope\GSServer\x86"
+Name: "{commoncf}\ASCOM\Uninstall\Telescope\GSServer\"
+Name: "{commoncf}\ASCOM\Uninstall\Telescope\GSServer\SkyScripts\"
+Name: "{commoncf}\ASCOM\Uninstall\Telescope\GSServer\Notes\NotesTemplates\"
+Name: "{commoncf}\ASCOM\Uninstall\Telescope\GSServer\Models"
+Name: "{commoncf}\ASCOM\Uninstall\Telescope\GSServer\LanguageFiles"
+Name: "{commoncf}\ASCOM\Uninstall\Telescope\GSServer\arm64"
+Name: "{commoncf}\ASCOM\Uninstall\Telescope\GSServer\x64"
+Name: "{commoncf}\ASCOM\Uninstall\Telescope\GSServer\x86"
 ; TODO: Add subfolders below {app} as needed (e.g. Name: "{app}\MyFolder")
 
 [Files]
@@ -97,6 +97,7 @@ Filename: "{app}\GS.Server.exe"; Parameters: "/register /{language}"
 
 ; Only if driver is .NET
 [UninstallRun]
+; RunOnceId: "DelService"
 ; This helps to give a clean uninstall
 
 ; Only for .NET local-server drivers, use /unprofile to remove ascom profile 
